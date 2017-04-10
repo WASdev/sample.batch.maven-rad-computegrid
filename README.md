@@ -59,7 +59,7 @@ The final piece of the puzzle is the **archetype:create-from-project** goal whic
 1. A WebSphere Application Server V9.0 installation (or V8.5 with slight modifications, not shown) with the **Embeddable EJB container** optional feature included as part of the installation.
 	
 	
-**Note:** These instructions were tested with RAD Version 9.6, and Version 9.0.0.3. 
+**Note:** These instructions were tested with RAD Version 9.6, and WebSphere Application Server Version 9.0.0.3. 
 
 ## Next step
 
