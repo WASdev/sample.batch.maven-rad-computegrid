@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright 2017 International Business Machines Corp.
+   
+   See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership. Licensed under the Apache License, 
+   Version 2.0 (the "License"); you may not use this file except in compliance
+   with the License. You may obtain a copy of the License at
+   
+     http://www.apache.org/licenses/LICENSE-2.0
+   
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}</artifactId>
+    <version>${version}</version>
+    <packaging>ejb</packaging>
+    <build>
+        <sourceDirectory>${project.build.directory}/ejbModule</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>${project.build.directory}/ejbModule</directory>
+                <excludes>
+                    <exclude>**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>pgcpackager</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <taskdef name="pgcpackager" classname="com.ibm.ws.batch.packager.PGCPackager"
+                                    classpathref="maven.plugin.classpath" />
+                                <pgcpackager appname="MyBatchEAR"
+                                    earFile="${project.build.directory}/MyBatchEAR"
+                                    jarfile="${project.basedir}/../MyBatch/target/MyBatch-1.0-SNAPSHOT.jar"
+                                    gridJob="true" />
+                                <unzip src="${project.build.directory}/MyBatchEAR.ear"
+                                    dest="${project.build.directory}">
+                                    <patternset>
+                                        <include name="**/*.jar" />
+                                    </patternset>
+                                </unzip>
+                                <unzip src="${project.build.directory}/MyBatchEAREJBs.jar"
+                                    dest="${project.build.directory}/ejbModule">
+                                    <patternset>
+                                        <include name="META-INF/ejb-jar.xml" />
+                                        <include name="META-INF/ibm-ejb-jar-bnd.xmi" />
+                                    </patternset>
+                                </unzip>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.ibm.ws.scottkurz.waslib</groupId>
+                        <artifactId>batch-runtime</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ejb-plugin</artifactId>
+                <version>2.5.1</version>
+                <!-- This magic lets us run both the Ant PGCPackager as well as the EJB 
+                    plugin in the 'package' phase. This is an issue since the EJB DD is generated 
+                    by the Ant logic to run the PGCPackager and unzip. We'd either have to move 
+                    something out of the 'package' phase or deal with it in some other way. That's 
+                    because the default execution gets to go first when it runs in the 'package' 
+                    phase, so we bind it to the 'none' phase. -->
+                <executions>
+                    <execution>
+                        <id>default-ejb</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>ejb</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>package-ejb</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>ejb</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${project.build.directory}/ejbModule</sourceDirectory>
+                            <archive>
+                                <manifestEntries>
+                                    <Class-Path>MyBatch-${project.version}.jar</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>com.ibm.ws.scottkurz.waslib</groupId>
+            <artifactId>batch-runtime</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.ws.scottkurz.waslib</groupId>
+            <artifactId>ejb-embeddableContainer</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${groupId}</groupId>
+            <artifactId>MyBatch</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>
