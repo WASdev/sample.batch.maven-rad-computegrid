@@ -65,8 +65,11 @@ The final piece of the puzzle is the **archetype:create-from-project** goal whic
 
 * [Next article](/docs/common-setup.md) - Initialize your local Maven repository to work with these sample instructions
 
+# Notice
 
-# Copyright / Disclaimer
+© Copyright IBM Corporation 2017.
+
+# License
 
     /*
      * Copyright 2017 International Business Machines Corp.
