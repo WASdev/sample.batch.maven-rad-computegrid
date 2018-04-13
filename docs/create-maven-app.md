@@ -19,7 +19,10 @@ The pattern is captured in a sample Maven archetype, a template for a Maven proj
 
 1. Update your local catalog (optional, but makes creation step a bit easier).
 
-		mvn -f textfile-io-archetype-1.0-SNAPSHOT.pom archetype:update-local-catalog
+		cd ..    # back to the repository root, (or any dir WITHOUT a pom.xml)
+		mvn archetype:crawl
+	**Note:** I used to have this to update the local catalog but apparently it doesn't work always:
+      ~~mvn -f textfile-io-archetype-1.0-SNAPSHOT.pom archetype:update-local-catalog~~
 
 ## Create your new project
 
@@ -77,3 +80,4 @@ On the other hand, there are a number of things you'd probably change before rea
 ## Next step
 
 * [Next article](run-maven-app.md) - Bring your app into RAD, deploy it to a server, and run it for the first time.
+
